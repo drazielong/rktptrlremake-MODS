@@ -3,10 +3,6 @@ class play extends Phaser.Scene {
         super("playScene");
     }
 
-    preload () {
-        this.load.image(); //whatever images
-    }
-
     create() {
         //green ui bg - add and rectangle come from phaser framework
         //parameters: ?, ?, width, height, color

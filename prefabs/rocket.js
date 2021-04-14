@@ -3,7 +3,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         super(scene, x, y, texture, frame);
 
         scene.add.existing(this);  //add to existing, displayList, updateList
-        this.isFiring = false;     //track rocket's firing status
+        this.isFiring = false;     //track rocket's firing status 
         this.isReset = true;       //check is missile is reset before playing the firing sfx again
         this.moveSpeed = 2;        //pixels per frame 
         this.sfxRocket = scene.sound.add('sfx_rocket');
@@ -28,7 +28,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         //if fired, move up
         if(this.isFiring && this.y >= borderUISize * 3 + borderPadding) {
             this.y -= this.moveSpeed;
-            this.isReset = false;
+            this.isReset = false; //to prevent the rocket shooting sound from playing when in the air
         }
         //reset on miss
         if(this.y <= borderUISize * 3 + borderPadding) {

@@ -98,7 +98,7 @@ class play extends Phaser.Scene {
         }
         if (this.checkCollision(this.p1Rocket, this.ship02)) {
             this.p1Rocket.reset();
-            this.shipExplode(this.ship02);
+            this.shipExplode(this.ship02);      
         }
         if (this.checkCollision(this.p1Rocket, this.ship01)) {
             this.p1Rocket.reset();
@@ -138,7 +138,8 @@ class play extends Phaser.Scene {
         // score add
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;  
-        this.sound.play('sfx_explosion');     
+        this.sound.play('sfx_explosion'); 
+        this.p1Rocket.isReset = true;    
       }
 
 }

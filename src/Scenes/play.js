@@ -49,14 +49,47 @@ class play extends Phaser.Scene {
             frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 2, first: 0}),
             frameRate: 3
         });
+
+        this.p1Score = 0;
+
+        // display score
+        let scoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'right',
+            padding: {
+                top: - 170,
+                bottom: -5,
+            },
+            fixedWidth: 100
+        }
+        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding * 2, this.p1Score, scoreConfig);
+
+        this.gameOver = false;
+
+        // game clock depending on mode selected
+        scoreConfig.fixedWidth = 0;
+        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
+            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
+            this.gameOver = true;
+        }, null, this);
     }
 
     update() {
         this.stars.tilePositionX -= 2;
-        this.p1Rocket.update();
-        this.ship01.update();
-        this.ship02.update();
-        this.ship03.update();
+        // check key input for restart
+        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+            this.scene.restart();
+        }
+        if (!this.gameOver) {               
+            this.p1Rocket.update();
+            this.ship01.update();           
+            this.ship02.update();
+            this.ship03.update();
+        }
 
         // check collisions: needs to update every frame so it goes here
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
@@ -70,6 +103,11 @@ class play extends Phaser.Scene {
         if (this.checkCollision(this.p1Rocket, this.ship01)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
+        }
+
+        //GAME OVER selections
+        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.scene.start("menuScene");
         }
     }
 
@@ -85,7 +123,7 @@ class play extends Phaser.Scene {
                 return false;
             }
     }
-    //this is called correctly but animation is not playing
+
     shipExplode(ship) {
         // temporarily hide ship
         ship.alpha = 0;
@@ -96,7 +134,11 @@ class play extends Phaser.Scene {
           ship.reset();                         // reset ship position
           ship.alpha = 1;                       // make ship visible again
           boom.destroy();                       // remove explosion sprite
-        });       
+        });
+        // score add
+        this.p1Score += ship.points;
+        this.scoreLeft.text = this.p1Score;  
+        this.sound.play('sfx_explosion');     
       }
 
 }

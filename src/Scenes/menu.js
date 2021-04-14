@@ -17,8 +17,8 @@ class menu extends Phaser.Scene {
             color: '#843605',
             align: 'right',
             padding: {
-                top: - 170,
-                bottom: -5,
+                top: 5,
+                bottom: 5,
             },
             fixedWidth: 0
         }

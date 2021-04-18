@@ -5,22 +5,26 @@ class play extends Phaser.Scene {
 
     //preloads assets so we can use them in game
     preload() { 
-        this.load.image('stars', 'assets/stars.png');
-        this.load.image('galaxy', 'assets/galaxy.png');
-        this.load.image('rocket', 'assets/rocket.png');
-        this.load.image('spaceship', 'assets/ship.png'); 
+        this.load.image('rocket', 'assets/pop2.png');
+        this.load.image('spaceship', 'assets/kid1.png'); 
+        this.load.image('dave','assets/dave.png'); //placeholder for powerup
         // load spritesheet
         this.load.spritesheet('explosion', 'assets/explosion.png', {frameWidth: 200, frameHeight: 200, startFrame: 0, endFrame: 2});
+        this.load.spritesheet('bg', 'assets/bgsprites.png', {frameWidth: 640, frameHeight: 480, startFrame: 0, endFrame: 1});
+        this.load.audio('bgm', 'assets/menubgm.m4a') //placeholder!!!!!!!!!!!!!!!
     }
 
     create() {
-        //tile sprite wants five parameters: x-position, y-position, width, height, and a key string that tells us which image to use
-        //this.galaxy = this.add.tileSprite(0, 0, 640, 480, 'galaxy').setOrigin(0,0);
-        this.stars = this.add.tileSprite(0, 0, 640, 480, 'stars').setOrigin(0,0);
-        //green ui bg - add and rectangle come from phaser framework
-        //parameters: ?, ?, width, height, color
-        //Im guessing the first two parameters are the starting position as in where to draw the rectangle
-        //default origin is the middle of rectangle, we want the upper left corner
+        //animation config
+        this.anims.create({
+            key: 'drive',
+            frames: this.anims.generateFrameNumbers('bg', { start: 0, end: 1, first: 0}),
+            frameRate: 2,
+            repeat: -1
+        });
+
+        this.bgAnimation();
+
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0); 
 
         // add spaceships (x3)
@@ -65,33 +69,59 @@ class play extends Phaser.Scene {
             },
             fixedWidth: 100
         }
+
         this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding * 2, this.p1Score, scoreConfig);
 
         this.gameOver = false;
 
-        // game clock depending on mode selected
         scoreConfig.fixedWidth = 0;
+
+        // game clock depending on mode selected
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
             this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
-    }
+
+        //display clock (same settings as score because lazy)
+        this.clockTimer = this.add.text(borderUISize + borderPadding * 22, borderUISize + borderPadding * 2, game.settings.gameTimer, scoreConfig);
+
+        this.sound.play('bgm', {volume: 0.2, loop: true});
+        /* {
+             mute: false,
+             volume: 1,
+             rate: 1,
+             detune: 0,
+             seek: 0,
+             loop: false,
+             delay: 0
+        */ 
+       }
 
     update() {
-        this.stars.tilePositionX -= 2;
-        // check key input for restart
+
+        //scoreConfig is outta scope, but play.scoreConfig works (sort of lmao) but it does not update still
+
+        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
+            this.scene.start("menuScene");
+        }
+
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
+            //resets audio: had to type it like this because even if i put the music in a variable, i couldnt call it here because its out of scope I guesS? it would also tell me "stop isnt a function" if i did this.sound.stop('bgm')
+            //but this line can access the music from any scene apparently
+            //shoutout to user Joseph7695 on phaser discorse forums for coming in clutch
+            this.sound.get('bgm').stop(); 
         }
+
         if (!this.gameOver) {               
             this.p1Rocket.update();
             this.ship01.update();           
             this.ship02.update();
             this.ship03.update();
+
         }
 
-        // check collisions: needs to update every frame so it goes here
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
@@ -104,15 +134,9 @@ class play extends Phaser.Scene {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
         }
-
-        //GAME OVER selections
-        if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            this.scene.start("menuScene");
-        }
     }
 
     checkCollision(rocket, ship) {
-        //if two rectangles overlap, return true
         if (rocket.x < ship.x + ship.width &&
             rocket.x + rocket.width > ship.x &&
             rocket.y < ship.y + ship.height &&
@@ -138,9 +162,12 @@ class play extends Phaser.Scene {
         // score add
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score;  
-        this.sound.play('sfx_explosion'); 
+        this.sound.play('sfx_eat1', {volume: 0.8}); //randomize eat sounds go here
         this.p1Rocket.isReset = true;    
       }
 
+    bgAnimation() {
+        let bgAnim = this.add.sprite(0, 0, 'drive').setOrigin(0, 0);
+        bgAnim.anims.play('drive');
+    }
 }
-

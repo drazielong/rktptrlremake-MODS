@@ -6,7 +6,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         this.isFiring = false;     //track rocket's firing status 
         this.isReset = true;       //check is missile is reset before playing the firing sfx again
         this.moveSpeed = 2;        //pixels per frame 
-        this.sfxRocket = scene.sound.add('sfx_rocket');
+        this.sfxPop = scene.sound.add('sfx_pop');
     }
 
     update(){
@@ -22,7 +22,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         if(Phaser.Input.Keyboard.JustDown(keyF)) {
             this.isFiring = true;
             if (this.isReset){
-                this.sfxRocket.play(); //play sfx
+                this.sfxPop.play(); //play sfx
             }    
         }
         //if fired, move up

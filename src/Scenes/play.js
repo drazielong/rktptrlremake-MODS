@@ -13,11 +13,12 @@ class play extends Phaser.Scene {
         this.load.spritesheet('kid0', 'assets/kid1SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
         this.load.spritesheet('kid1', 'assets/kid2SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
         this.load.spritesheet('kid2', 'assets/kid3SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
-        this.load.spritesheet('chomp', 'assets/chomp.png', {frameWidth: 180, frameHeight: 136, startFrame: 0, endFrame: 2}); //change this anim :/
+        this.load.spritesheet('chomp', 'assets/chomp.png', {frameWidth: 95, frameHeight: 105, startFrame: 0, endFrame: 4});
         this.load.spritesheet('bg', 'assets/bgsprites.png', {frameWidth: 640, frameHeight: 480, startFrame: 0, endFrame: 1});
     }
 
     create() {
+        debugger
         //animation config
         this.anims.create({
             key: 'drive',
@@ -50,18 +51,18 @@ class play extends Phaser.Scene {
         
         this.anims.create({
             key: 'chomp',
-            frames: this.anims.generateFrameNumbers('chomp', { start: 0, end: 2, first: 0}),
-            frameRate: 5
+            frames: this.anims.generateFrameNumbers('chomp', { start: 0, end: 4, first: 0}),
+            frameRate: 12
         });
 
         this.Animation('drive');
 
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0); 
 
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 4, 'kid0', 0, 30).setOrigin(0, 0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 5 + borderPadding * 2, 'kid1', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 4, 'kid2', 0, 10).setOrigin(0,0);
-        this.Pop2 = new Powerup(this, game.config.width, borderUISize + borderPadding * 4, 'powerup', 0, 200).setOrigin(0,0);
+        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 5, 'kid0', 0, 30).setOrigin(0, 0);
+        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 6 + borderPadding * 2, 'kid1', 0, 20).setOrigin(0,0);
+        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 7, 'kid2', 0, 10).setOrigin(0,0);
+        this.Pop2 = new Powerup(this, game.config.width, borderUISize * 2 + borderPadding * 4, 'powerup', 0, 1000).setOrigin(0,0);
 
         //white borders 
         this.add.rectangle(0, 0, game.config.width, borderUISize, 0xFFFFFF).setOrigin(0, 0);
@@ -119,11 +120,12 @@ class play extends Phaser.Scene {
              delay: 0
         */ 
 
-        //display clock (idk how to update)
-        //this.clockTimer = this.add.text(borderUISize + borderPadding * 22, borderUISize + borderPadding * 2, game.settings.gameTimer, scoreConfig);
+        this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
        }
 
     update() {
+        this.clockTimer.text = ('Time remaining: ' + Math.floor(this.clock.getRemainingSeconds()));
+
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.sound.get('bgm').stop();
             this.scene.start("menuScene");
@@ -139,6 +141,9 @@ class play extends Phaser.Scene {
             this.ship01.update();           
             this.ship02.update();
             this.ship03.update();
+            //can i update an animation here?
+            // let wave = this.add.sprite(this.ship03.x, this.ship03.y, 'kidz2').setOrigin(0, 0);
+            // wave.anims.play('kidz2');
             this.Pop2.update();
 
         }
@@ -156,6 +161,8 @@ class play extends Phaser.Scene {
             this.shipExplode(this.ship01);
         }
         if (this.checkCollision(this.p1Rocket, this.Pop2)) {
+            this.p1Score += this.Pop2.points;
+            this.scoreLeft.text = this.p1Score; 
             this.p1Rocket.reset();
             this.Pop2.destroy();
             this.p1Rocket.destroy();
@@ -178,11 +185,11 @@ class play extends Phaser.Scene {
     shipExplode(ship) {
         ship.alpha = 0;
         let boom = this.add.sprite(ship.x, ship.y, 'chomp').setOrigin(0, 0);
+        ship.reset();                         // reset ship position
         boom.anims.play('chomp');               // play explode animation
         boom.on('animationcomplete', () => {    // callback after anim completes
-          ship.reset();                         // reset ship position
           ship.alpha = 1;                       // make ship visible again
-          boom.destroy();                       // remove explosion sprite
+          boom.destroy();                       // remove eat sprite
         });
         // score add
         this.p1Score += ship.points;

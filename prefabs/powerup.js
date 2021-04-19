@@ -11,7 +11,7 @@ class Powerup extends Phaser.GameObjects.Sprite {
         this.x -= this.moveSpeed;
         //if powerup goes beyond the border on the left side, reset on the right side
         if(this.x <= 0 - this.width) {
-            this.x = game.config.width;
+            this.x = game.config.width + 600;
         }
     }
 

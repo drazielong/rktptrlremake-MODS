@@ -103,16 +103,18 @@ class play extends Phaser.Scene {
        }
 
     update() {
+        //this.clock.paused = true;
+        //play animation, then play music (edit silence out)
         this.clockTimer.text = ('Time remaining: ' + Math.floor(this.clock.getRemainingSeconds()));
 
         if(game.settings.gameTimer == 45000 && !this.music) {
-            this.gameBGM = this.sound.add('game_bgm', {volume: 0.3, loop: false});
+            this.gameBGM = this.sound.add('game_bgm', {volume: 0.5, loop: false});
             this.gameBGM.play();
             this.music = true;
         }
 
         if(game.settings.gameTimer == 60000 && !this.music) {
-            this.gameBGM = this.sound.add('game_bgm2', {volume: 0.3, loop: false});
+            this.gameBGM = this.sound.add('game_bgm2', {volume: 0.5, loop: false});
             this.gameBGM.play();
             this.music = true;
         }

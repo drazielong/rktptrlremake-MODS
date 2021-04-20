@@ -8,14 +8,14 @@ class Kid extends Phaser.GameObjects.Sprite {
 
     update() {
         this.x -= this.moveSpeed;
-        //if ship goes beyond the border on the left side, reset on the right side
+        //if kid goes beyond the border on the left side, reset on the right side
         if(this.x <= 0 - this.width) {
-            this.x = game.config.width + 50;
+            this.x = game.config.width + 10;
         }
     }
 
     reset() {
-        let randomNum = Math.floor(Math.random() * 300);
+        let randomNum = Math.floor(Math.random() * 200);
         this.x = game.config.width + 600 + randomNum;
     }
 }

@@ -12,8 +12,8 @@ class menu extends Phaser.Scene {
         this.load.audio('sfx_eat3', 'assets/eat3.wav');
         this.load.audio('sfx_pop', 'assets/pop.m4a');
         this.load.audio('menu_bgm', 'assets/menubgm.m4a');
-        this.load.audio('game_bgm', 'assets/gamebgm.wav');
-        this.load.audio('game_bgm2', 'assets/gamebgm2.wav');
+        this.load.audio('game_bgm', 'assets/gamebgmKIDS.mp3');
+        this.load.audio('game_bgm2', 'assets/gamebgm2KIDS.mp3');
         this.load.image('menubg', 'assets/menu.png');
         this.load.image('rules', 'assets/rules.png');
         this.load.spritesheet('kid0', 'assets/kid1SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
@@ -28,7 +28,7 @@ class menu extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
-        this.menuBGM = this.sound.add('menu_bgm', {volume: 0.2, loop: true});
+        this.menuBGM = this.sound.add('menu_bgm', {volume: 0.4, loop: true});
         this.menuBGM.play();
         this.add.tileSprite(0, 0, 640, 480, 'menubg').setOrigin(0,0);
 

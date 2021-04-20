@@ -13,9 +13,9 @@
 //changed the background to have an animated sprite (got rid of scrolling bg for now)
 
 /* EXTRAS!!!
-    - randomized timing for kids respawning because why not
+    - slightly randomized timing for kids respawning because why not
     - music adapts to game time :D (as long as you dont click off)
-    - rules screen with animations that I couldn't use!!!
+    - rules screen with animations that I didn't use!!!
     - centered the game on the page
 */
 
@@ -28,7 +28,6 @@
     - intro animation before the game lets you play? This is such a stretch goal thing but I kinda want to do it for funsies
         - when the little piano tune plays at the beginning of play scene, display an animation thats like "ICE CREAM!!! ... GO" 
         - then the timer starts and the kids appear
-        - this requires me to rework the song to adapt to the extra time
 */
 
 let config = {

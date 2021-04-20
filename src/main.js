@@ -3,15 +3,13 @@
 //April 18, 2021
 //16 hours so far
 //Reskinned the game to be popsicle shooting game and not space (60 points)
-//added original background music to menu and main game (5 points)
+//added original background music to menu (5 points)
 //Randomized explosion (eating) sfx (10 points)
 //Randomized timing for kids respawning because why not
 //changed the background to have an animated sprite (got rid of scrolling bg for now)
 //added a powerup that is earned by shooting a faster sprite -- the powerup shoots faster and is larger than the base popsicle + is worth 1000 points. the player keeps it until game over (20 points)
 //new title screen AND rules screen (10 points)
 //added timer on screen (10 points)
-
-//shoutout to user Joseph7695 on phaser discorse forums for posting about this.sound.get() despite the sound issue I have now
 
 /*
     WIP stuff/things I might get around to doing:

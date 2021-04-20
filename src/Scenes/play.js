@@ -7,18 +7,14 @@ class play extends Phaser.Scene {
     preload() { 
         this.load.image('rocket', 'assets/pop1.png');
         this.load.image('rocket2', 'assets/pop2.png');
-        this.load.image('kid1', 'assets/kid1.png');
-        this.load.image('kid2', 'assets/kid2.png');
-        this.load.image('kid0', 'assets/kid3.png');
-        this.load.spritesheet('kid0', 'assets/kid1SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
-        this.load.spritesheet('kid1', 'assets/kid2SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
-        this.load.spritesheet('kid2', 'assets/kid3SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
-        this.load.spritesheet('chomp', 'assets/chomp.png', {frameWidth: 95, frameHeight: 105, startFrame: 0, endFrame: 4});
+        this.load.image('kid0S', 'assets/kid1.png');
+        this.load.image('kid1S', 'assets/kid2.png');
+        this.load.image('kid2S', 'assets/kid3.png');
+        this.load.spritesheet('chomp', 'assets/chomp2.png', {frameWidth: 76, frameHeight: 84, startFrame: 0, endFrame: 4});
         this.load.spritesheet('bg', 'assets/bgsprites.png', {frameWidth: 640, frameHeight: 480, startFrame: 0, endFrame: 1});
     }
 
     create() {
-        debugger
         //animation config
         this.anims.create({
             key: 'drive',
@@ -28,40 +24,19 @@ class play extends Phaser.Scene {
         });
 
         this.anims.create({
-            key: 'kidz0',
-            frames: this.anims.generateFrameNumbers('kid0', { start: 0, end: 1, first: 0}),
-            frameRate: 2,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'kidz1',
-            frames: this.anims.generateFrameNumbers('kid1', { start: 0, end: 1, first: 0}),
-            frameRate: 2,
-            repeat: -1
-        });
-
-        this.anims.create({
-            key: 'kidz2',
-            frames: this.anims.generateFrameNumbers('kid2', { start: 0, end: 1, first: 0}),
-            frameRate: 2,
-            repeat: -1
-        });
-
-        
-        this.anims.create({
             key: 'chomp',
             frames: this.anims.generateFrameNumbers('chomp', { start: 0, end: 4, first: 0}),
             frameRate: 12
         });
 
-        this.Animation('drive');
+        let bgAnim = this.add.sprite(0, 0, 'drive').setOrigin(0, 0);
+        bgAnim.anims.play('drive');
 
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0); 
-
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 5, 'kid0', 0, 30).setOrigin(0, 0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 6 + borderPadding * 2, 'kid1', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 7, 'kid2', 0, 10).setOrigin(0,0);
+        
+        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 6, 'kid0S', 0, 30).setOrigin(0, 0);
+        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 7 + borderPadding * 2, 'kid1S', 0, 20).setOrigin(0,0);
+        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 8, 'kid2S', 0, 10).setOrigin(0,0);
         this.Pop2 = new Powerup(this, game.config.width, borderUISize * 2 + borderPadding * 4, 'powerup', 0, 1000).setOrigin(0,0);
 
         //white borders 
@@ -70,7 +45,7 @@ class play extends Phaser.Scene {
         this.add.rectangle(0, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         this.add.rectangle(game.config.width - borderUISize, 0, borderUISize, game.config.height, 0xFFFFFF).setOrigin(0, 0);
         
-        //add rocket (p1)
+        //add rocket aka popsicle (p1)
         this.p1Rocket = new Rocket(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket').setOrigin(0.5, 0);
 
         //define keys
@@ -108,7 +83,9 @@ class play extends Phaser.Scene {
             this.gameOver = true;
         }, null, this);
 
-        this.sound.play('bgm', {volume: 0.2, loop: true});
+        this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
+
+        this.sound.play('menu_bgm', {volume: 0.2, loop: true});
 
         /* {
              mute: false,
@@ -119,21 +96,19 @@ class play extends Phaser.Scene {
              loop: false,
              delay: 0
         */ 
-
-        this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
        }
 
     update() {
         this.clockTimer.text = ('Time remaining: ' + Math.floor(this.clock.getRemainingSeconds()));
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            this.sound.get('bgm').stop();
+            this.sound.get('menu_bgm').stop();
             this.scene.start("menuScene");
         }
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
-            this.sound.get('bgm').stop(); 
+            this.sound.get('menu_bgm').stop(); 
         }
 
         if (!this.gameOver) { 
@@ -141,11 +116,7 @@ class play extends Phaser.Scene {
             this.ship01.update();           
             this.ship02.update();
             this.ship03.update();
-            //can i update an animation here?
-            // let wave = this.add.sprite(this.ship03.x, this.ship03.y, 'kidz2').setOrigin(0, 0);
-            // wave.anims.play('kidz2');
             this.Pop2.update();
-
         }
 
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
@@ -184,23 +155,27 @@ class play extends Phaser.Scene {
 
     shipExplode(ship) {
         ship.alpha = 0;
-        let boom = this.add.sprite(ship.x, ship.y, 'chomp').setOrigin(0, 0);
-        ship.reset();                         // reset ship position
-        boom.anims.play('chomp');               // play explode animation
-        boom.on('animationcomplete', () => {    // callback after anim completes
-          ship.alpha = 1;                       // make ship visible again
-          boom.destroy();                       // remove eat sprite
+        let randomNum = Math.floor(Math.random() * 4);
+        this.sound.play('sfx_eat' + randomNum, {volume: 0.8});
+        let eat = this.add.sprite(ship.x, ship.y, 'chomp').setOrigin(0, 0);
+        eat.anims.play('chomp');
+        ship.reset();                           // reset ship position so you can't hit it while invisible
+        eat.on('animationcomplete', () => {    // callback after anim completes
+          ship.alpha = 1;                      // make ship visible again
+          eat.destroy();                       // remove eat sprite
         });
         // score add
         this.p1Score += ship.points;
         this.scoreLeft.text = this.p1Score; 
-        let randomNum = Math.floor(Math.random() * 4);
-        this.sound.play('sfx_eat' + randomNum, {volume: 0.8});
         this.p1Rocket.isReset = true;    
       }
 
-    Animation(x) {
-        let Anim = this.add.sprite(0, 0, x).setOrigin(0, 0);
-        Anim.anims.play(x);
+    //attempt at creating an animation that plays as the kids go across the screen -- definitely not how ur supposed to do it
+    animationUpd8(ship, spritesheet) {
+        let wave = this.add.sprite(ship.x, ship.y, spritesheet).setOrigin(0, 0);
+        wave.anims.play(spritesheet);
+        wave.on('animationcomplete', () => {
+            wave.destroy();
+        });
     }
 }

@@ -6,7 +6,6 @@ class Powerup extends Phaser.GameObjects.Sprite {
         this.moveSpeed = game.settings.spaceshipSpeed + 2;       
     }
 
-
     update(){
         this.x -= this.moveSpeed;
         //if powerup goes beyond the border on the left side, reset 600 pixels off the right side

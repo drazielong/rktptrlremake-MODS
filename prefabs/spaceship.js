@@ -6,16 +6,16 @@ class Spaceship extends Phaser.GameObjects.Sprite {
         this.moveSpeed = game.settings.spaceshipSpeed;       
     }
 
-
-    update(){
+    update() {
         this.x -= this.moveSpeed;
         //if ship goes beyond the border on the left side, reset on the right side
         if(this.x <= 0 - this.width) {
-            this.x = game.config.width + 100;
+            this.x = game.config.width + 50;
         }
     }
 
     reset() {
-        this.x = game.config.width + 200;
+        let randomNum = Math.floor(Math.random() * 300);
+        this.x = game.config.width + 600 + randomNum;
     }
 }

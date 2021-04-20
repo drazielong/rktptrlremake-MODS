@@ -3,7 +3,6 @@ class play extends Phaser.Scene {
         super("playScene");
     }
 
-    //preloads assets so we can use them in game
     preload() { 
         this.load.image('rocket', 'assets/pop1.png');
         this.load.image('rocket2', 'assets/pop2.png');
@@ -34,9 +33,9 @@ class play extends Phaser.Scene {
 
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0,0); 
         
-        this.ship01 = new Spaceship(this, game.config.width + borderUISize * 6, borderUISize * 6, 'kid0S', 0, 30).setOrigin(0, 0);
-        this.ship02 = new Spaceship(this, game.config.width + borderUISize * 3, borderUISize * 7 + borderPadding * 2, 'kid1S', 0, 20).setOrigin(0,0);
-        this.ship03 = new Spaceship(this, game.config.width, borderUISize * 6 + borderPadding * 8, 'kid2S', 0, 10).setOrigin(0,0);
+        this.kid01 = new Kid(this, game.config.width + borderUISize * 6, borderUISize * 6, 'kid0S', 0, 30).setOrigin(0, 0);
+        this.kid02 = new Kid(this, game.config.width + borderUISize * 3, borderUISize * 7 + borderPadding * 2, 'kid1S', 0, 20).setOrigin(0,0);
+        this.kid03 = new Kid(this, game.config.width, borderUISize * 6 + borderPadding * 8, 'kid2S', 0, 10).setOrigin(0,0);
         this.Pop2 = new Powerup(this, game.config.width, borderUISize * 2 + borderPadding * 4, 'powerup', 0, 1000).setOrigin(0,0);
 
         //white borders 
@@ -76,17 +75,21 @@ class play extends Phaser.Scene {
 
         scoreConfig.fixedWidth = 0;
 
-        // game clock depending on mode selected
+        // game clock depending on mode selected + game over text
         this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-            this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-            this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 - 64, 'GAME OVER', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 - 16, 'You earned $' + this.p1Score + ' dollars!', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 32, 'Nice going dude!!!', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 80, 'Press (R) to Restart or ← for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
 
         this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
 
-        this.gameBGM = this.sound.add('game_bgm', {volume: 0.3, loop: true});
-        this.gameBGM.play();
+        this.music = false; //queue me adding music in probably the most roundabout way
+
+        //added a condition for the powerup because you could still get points after you get the powerup after it got destroyed? hopefully this helps fixes
+        this.powerupGot = false;
 
         /* {
              mute: false,
@@ -102,6 +105,18 @@ class play extends Phaser.Scene {
     update() {
         this.clockTimer.text = ('Time remaining: ' + Math.floor(this.clock.getRemainingSeconds()));
 
+        if(game.settings.gameTimer == 45000 && !this.music) {
+            this.gameBGM = this.sound.add('game_bgm', {volume: 0.3, loop: false});
+            this.gameBGM.play();
+            this.music = true;
+        }
+
+        if(game.settings.gameTimer == 60000 && !this.music) {
+            this.gameBGM = this.sound.add('game_bgm2', {volume: 0.3, loop: false});
+            this.gameBGM.play();
+            this.music = true;
+        }
+
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
             this.gameBGM.stop(); 
             this.scene.start("menuScene");
@@ -114,45 +129,44 @@ class play extends Phaser.Scene {
 
         if (!this.gameOver) { 
             this.p1Rocket.update();              
-            this.ship01.update();           
-            this.ship02.update();
-            this.ship03.update();
+            this.kid01.update();           
+            this.kid02.update();
+            this.kid03.update();
         }
 
-        //added another condition for this because you could still get points after you get the powerup after it got destroyed? hopefully this fixes
         if (!this.gameOver && !this.powerupGot) {
             this.Pop2.update();
         }
 
-        if(this.checkCollision(this.p1Rocket, this.ship03)) {
+        if(this.checkCollision(this.p1Rocket, this.kid03)) {
             this.p1Rocket.reset();
-            this.shipExplode(this.ship03);
+            this.kidChomp(this.kid03);
         }
-        if (this.checkCollision(this.p1Rocket, this.ship02)) {
+        if (this.checkCollision(this.p1Rocket, this.kid02)) {
             this.p1Rocket.reset();
-            this.shipExplode(this.ship02);      
+            this.kidChomp(this.kid02);      
         }
-        if (this.checkCollision(this.p1Rocket, this.ship01)) {
+        if (this.checkCollision(this.p1Rocket, this.kid01)) {
             this.p1Rocket.reset();
-            this.shipExplode(this.ship01);
+            this.kidChomp(this.kid01);
         }
         if (this.checkCollision(this.p1Rocket, this.Pop2)) {
             this.p1Score += this.Pop2.points;
             this.scoreLeft.text = this.p1Score; 
             this.p1Rocket.reset();
-            this.Pop2.reset();
-            this.Pop2.destroy();
+            this.Pop2.reset();         //just to be sure the soon to be empty object (?) is off screen
+            this.Pop2.destroy();       
             this.p1Rocket.destroy();
             this.p1Rocket = new Rocket2(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket2').setOrigin(0.5, 0);
-            this.powerupGot = true
+            this.powerupGot = true;
         }
     }
 
-    checkCollision(rocket, ship) {
-        if (rocket.x < ship.x + ship.width &&
-            rocket.x + rocket.width > ship.x &&
-            rocket.y < ship.y + ship.height &&
-            rocket.height + rocket.y > ship.y) {
+    checkCollision(rocket, kid) {
+        if (rocket.x < kid.x + kid.width &&
+            rocket.x + rocket.width > kid.x &&
+            rocket.y < kid.y + kid.height &&
+            rocket.height + rocket.y > kid.y) {
                 return true;
             }
             else {
@@ -160,26 +174,26 @@ class play extends Phaser.Scene {
             }
     }
 
-    shipExplode(ship) {
-        ship.alpha = 0;
+    kidChomp(kid) {
+        kid.alpha = 0;
         let randomNum = Math.floor(Math.random() * 4);
         this.sound.play('sfx_eat' + randomNum, {volume: 0.4});
-        let eat = this.add.sprite(ship.x, ship.y, 'chomp').setOrigin(0, 0);
+        let eat = this.add.sprite(kid.x, kid.y, 'chomp').setOrigin(0, 0);
         eat.anims.play('chomp');
-        ship.reset();                           // reset ship position so you can't hit it while invisible
+        kid.reset();                          // reset kid position so you can't hit it while invisible (reset point is pretty far off screen)
         eat.on('animationcomplete', () => {    // callback after anim completes
-          ship.alpha = 1;                      // make ship visible again
+          kid.alpha = 1;                      // make kid visible again
           eat.destroy();                       // remove eat sprite
         });
         // score add
-        this.p1Score += ship.points;
+        this.p1Score += kid.points;
         this.scoreLeft.text = '$' + this.p1Score; 
         this.p1Rocket.isReset = true;    
       }
 
     //attempt at creating an animation that plays as the kids go across the screen -- definitely not how ur supposed to do it
-    animationUpd8(ship, spritesheet) {
-        let wave = this.add.sprite(ship.x, ship.y, spritesheet).setOrigin(0, 0);
+    animationUpd8(kid, spritesheet) {
+        let wave = this.add.sprite(kid.x, kid.y, spritesheet).setOrigin(0, 0);
         wave.anims.play(spritesheet);
         wave.on('animationcomplete', () => {
             wave.destroy();

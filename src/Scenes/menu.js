@@ -12,7 +12,8 @@ class menu extends Phaser.Scene {
         this.load.audio('sfx_eat3', 'assets/eat3.wav');
         this.load.audio('sfx_pop', 'assets/pop.m4a');
         this.load.audio('menu_bgm', 'assets/menubgm.m4a');
-        this.load.audio('game_bgm', 'assets/gamebgm.m4a');
+        this.load.audio('game_bgm', 'assets/gamebgm.wav');
+        this.load.audio('game_bgm2', 'assets/gamebgm2.wav');
         this.load.image('menubg', 'assets/menu.png');
         this.load.image('rules', 'assets/rules.png');
         this.load.spritesheet('kid0', 'assets/kid1SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});
@@ -27,9 +28,6 @@ class menu extends Phaser.Scene {
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
 
-        //https://phasertutorials.com/creating-a-phaser-3-template-part-3/?a=13 for music shit
-        //i think what is happening is that every time we open a scene, a new instance of the song and every asset is created
-        //so when i return to the menu screen and play another game, the menu song will play anyway bc i only have one "stop song" function
         this.menuBGM = this.sound.add('menu_bgm', {volume: 0.2, loop: true});
         this.menuBGM.play();
         this.add.tileSprite(0, 0, 640, 480, 'menubg').setOrigin(0,0);
@@ -60,7 +58,7 @@ class menu extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyLEFT) && !this.choice) {
             //ez mode
             game.settings = {
-                spaceshipSpeed: 3,
+                kidSpeed: 3,
                 gameTimer: 60000
             }
             this.choice = true;
@@ -74,7 +72,7 @@ class menu extends Phaser.Scene {
         if (Phaser.Input.Keyboard.JustDown(keyRIGHT) && !this.choice) {
             //hard mode
             game.settings = {
-                spaceshipSpeed: 4,
+                kidSpeed: 4,
                 gameTimer: 45000
             }
             this.choice = true;
@@ -85,6 +83,7 @@ class menu extends Phaser.Scene {
             this.Animation(400, 150, 'kidz2');
         }
 
+        //rules card
         if (Phaser.Input.Keyboard.JustDown(keyF) && this.choice){
             this.sound.play('sfx_select');
             this.menuBGM.stop();

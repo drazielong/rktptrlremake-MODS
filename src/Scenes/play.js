@@ -70,7 +70,7 @@ class play extends Phaser.Scene {
             fixedWidth: 100
         }
 
-        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding * 2, this.p1Score, scoreConfig);
+        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding * 2, '$' + this.p1Score, scoreConfig);
 
         this.gameOver = false;
 
@@ -85,7 +85,7 @@ class play extends Phaser.Scene {
 
         this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
 
-        this.gameBGM = this.sound.add('menu_bgm', {volume: 0.2, loop: true});
+        this.gameBGM = this.sound.add('game_bgm', {volume: 0.3, loop: true});
         this.gameBGM.play();
 
         /* {
@@ -117,6 +117,10 @@ class play extends Phaser.Scene {
             this.ship01.update();           
             this.ship02.update();
             this.ship03.update();
+        }
+
+        //added another condition for this because you could still get points after you get the powerup after it got destroyed? hopefully this fixes
+        if (!this.gameOver && !this.powerupGot) {
             this.Pop2.update();
         }
 
@@ -136,9 +140,11 @@ class play extends Phaser.Scene {
             this.p1Score += this.Pop2.points;
             this.scoreLeft.text = this.p1Score; 
             this.p1Rocket.reset();
+            this.Pop2.reset();
             this.Pop2.destroy();
             this.p1Rocket.destroy();
             this.p1Rocket = new Rocket2(this, game.config.width/2, game.config.height - borderUISize - borderPadding, 'rocket2').setOrigin(0.5, 0);
+            this.powerupGot = true
         }
     }
 
@@ -157,7 +163,7 @@ class play extends Phaser.Scene {
     shipExplode(ship) {
         ship.alpha = 0;
         let randomNum = Math.floor(Math.random() * 4);
-        this.sound.play('sfx_eat' + randomNum, {volume: 0.8});
+        this.sound.play('sfx_eat' + randomNum, {volume: 0.4});
         let eat = this.add.sprite(ship.x, ship.y, 'chomp').setOrigin(0, 0);
         eat.anims.play('chomp');
         ship.reset();                           // reset ship position so you can't hit it while invisible
@@ -167,7 +173,7 @@ class play extends Phaser.Scene {
         });
         // score add
         this.p1Score += ship.points;
-        this.scoreLeft.text = this.p1Score; 
+        this.scoreLeft.text = '$' + this.p1Score; 
         this.p1Rocket.isReset = true;    
       }
 

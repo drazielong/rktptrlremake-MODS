@@ -23,7 +23,7 @@ class Rocket2 extends Phaser.GameObjects.Sprite {
         if(Phaser.Input.Keyboard.JustDown(keyF)) {
             this.isFiring = true;
             if (this.isReset){
-                this.sfxPop.play(); //play sfx
+                this.sfxPop.play({volume: 0.5}); //play sfx
             }    
         }
         //if fired, move up

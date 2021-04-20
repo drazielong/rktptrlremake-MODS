@@ -12,7 +12,7 @@ class menu extends Phaser.Scene {
         this.load.audio('sfx_eat3', 'assets/eat3.wav');
         this.load.audio('sfx_pop', 'assets/pop.m4a');
         this.load.audio('menu_bgm', 'assets/menubgm.m4a');
-        this.load.audio('bgm', 'assets/dark_theme.mp3'); //placeholder :/
+        this.load.audio('game_bgm', 'assets/gamebgm.m4a');
         this.load.image('menubg', 'assets/menu.png');
         this.load.image('rules', 'assets/rules.png');
         this.load.spritesheet('kid0', 'assets/kid1SP.png', {frameWidth: 86, frameHeight: 105, startFrame: 0, endFrame: 1});

@@ -19,8 +19,7 @@
         - They dont even need arms I would take an armless sprite of the kids going :) :D :) :D
     - reimplement scrolling bg (like flowers/sidewalk/blades of grass)
     - border and general UI changes
-    - BGM music for the main game + fix the overlapping (bug)
-        - currently just reusing the same track for menu and game
+    - BGM music for the main game (currently just reusing the same track for menu and game which I dont like but im not good at making music)
     - maybe as cleanup, rename shit in these files to not say "spaceship" n stuff anymore
 */
 

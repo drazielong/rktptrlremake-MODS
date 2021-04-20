@@ -30,7 +30,8 @@ class menu extends Phaser.Scene {
         //https://phasertutorials.com/creating-a-phaser-3-template-part-3/?a=13 for music shit
         //i think what is happening is that every time we open a scene, a new instance of the song and every asset is created
         //so when i return to the menu screen and play another game, the menu song will play anyway bc i only have one "stop song" function
-        this.sound.play('menu_bgm', {volume: 0.2, loop: true});
+        this.menuBGM = this.sound.add('menu_bgm', {volume: 0.2, loop: true});
+        this.menuBGM.play();
         this.add.tileSprite(0, 0, 640, 480, 'menubg').setOrigin(0,0);
 
         this.anims.create({
@@ -86,7 +87,7 @@ class menu extends Phaser.Scene {
 
         if (Phaser.Input.Keyboard.JustDown(keyF) && this.choice){
             this.sound.play('sfx_select');
-            this.sound.get('menu_bgm').stop(); 
+            this.menuBGM.stop();
             this.scene.start('playScene');
             this.choice = false;
         }

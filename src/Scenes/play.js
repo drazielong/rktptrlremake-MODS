@@ -85,7 +85,8 @@ class play extends Phaser.Scene {
 
         this.clockTimer = this.add.text(borderUISize + borderPadding * 15, borderUISize + borderPadding * 2, 'Time remaining: ' + game.settings.gameTimer, scoreConfig);
 
-        this.sound.play('menu_bgm', {volume: 0.2, loop: true});
+        this.gameBGM = this.sound.add('menu_bgm', {volume: 0.2, loop: true});
+        this.gameBGM.play();
 
         /* {
              mute: false,
@@ -102,13 +103,13 @@ class play extends Phaser.Scene {
         this.clockTimer.text = ('Time remaining: ' + Math.floor(this.clock.getRemainingSeconds()));
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
-            this.sound.get('menu_bgm').stop();
+            this.gameBGM.stop(); 
             this.scene.start("menuScene");
         }
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
+            this.gameBGM.stop();
             this.scene.restart();
-            this.sound.get('menu_bgm').stop(); 
         }
 
         if (!this.gameOver) { 
